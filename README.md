@@ -32,8 +32,10 @@ https://github.com/chromealex/ecs.example
 | [Receive User Input](Docs/Manual-ReceivingUserInputInWorld.md) | How to receive markers in systems |
 | [Send and Receive RPC Calls](Docs/Manual-SendingAndReceivingRPCCalls.md) | How to register object in **NetworkModule**, send and receive RPC packages |
 | [Defines](Docs/Defines.md) | Define usage |
+| [Data Configs](Docs/DataConfig-Readme.md) | How to create data config files |
 | [Code Generators](Docs/CodeGenerators.md) | Code Generators usage |
-| [Pathfinding Package](Assets/ECS/ECSPathfinding) | Here are Pathfinding Package readme |
+| [Pathfinding Package](https://github.com/chromealex/ecs-submodule/tree/master/ECSPathfinding) | Here is Pathfinding Package readme |
+| [Serializer Package](https://github.com/chromealex/ecs-submodule/tree/master/ECSSerializer) | Here is Serializer Package readme |
 
 ## Contact Me
 Telegram: https://t.me/chromealex</br>
