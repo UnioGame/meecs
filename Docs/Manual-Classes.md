@@ -3,16 +3,19 @@
 #### Entities
 [How to create an entity](Manual-CreatingEntities.md)
 
-Entities are containers with ID and Version.
+Entities are containers with **ID** and **Generation**.<br>
+**ID** - unique entity identifier in the world.<br>
+**Generation** - unique entity generation identifier, increase when entity creates from the pool.<br>
+**GetVersion()** - method to return unique version of the entity, increase when entity changed.<br>
 <br>
 <br>
 
-#### Components (```IComponent```, ```IStructComponent```)
+#### Components (```IStructComponent```, ```IStructCopyable<>```)
 [How to create a component](Manual-CreatingComponents.md)
 
-Components are storing data. In ME.ECS there are 2 component types: IComponent and IStructComponent.
-IComponentCopyable(IComponent) could store multiple times and could be iterated by type. It is reference type and must implement CopyFrom and OnRecycle methods.
-IStructComponent could store just simple types or StackArray. It is value type.
+Components are storing data. In ME.ECS there are 2 component types: IStructCopyable<> and IStructComponent.
+IStructCopyable<> could be stored only once. it could store any types (including managed data) and must implement CopyFrom and OnRecycle methods.
+IStructComponent could store just simple types or StackArray.
 <br>
 <br>
 

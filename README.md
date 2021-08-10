@@ -6,8 +6,39 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/chromealex/ecs/blob/master/LICENSE)
 
+## Installation
+
+### Using submodule
+
+1. Download or add as a submodule this repository https://github.com/chromealex/ecs-submodule.
+2. Create an empty file called ```csc.gen.rsp``` inside Assets folder. Your file should have the path ```Assets/csc.gen.rsp```.
+3. In Package Manager install Burst (tested with version 1.3.9).
+4. In Package Manager install Unity Collections (tested with version 0.9.0-preview.6). Note: to find unity collections you need to choose "Add package from git URL" and fill it with "com.unity.collections".
+5. In Package Manager install Unity Mathematics (tested with version 1.2.1).
+6. Be sure your submodule folder has a name ```Assets/ecs-submodule``` or ```Assets/ECS-submodule```.
+7. You are ready to [Initialize Project](Docs/VideoTutorials.md).
+
+### Using Unity Package Manager
+
+2. Create an empty file called ```csc.gen.rsp``` inside Assets folder. Your file should have the path ```Assets/csc.gen.rsp```.
+2. Open ```Packages/manifest.json``` file.
+3. Add ME.ECS to your dependencies section:
+
+```
+{
+  "dependencies": {
+    [HERE ARE OTHER PACKAGES]
+    "com.me.ecs": "https://github.com/chromealex/ecs-submodule.git"
+  }
+}
+```
+4. You are ready to [Initialize Project](Docs/VideoTutorials.md).
+
 ## Example Repository
 https://github.com/chromealex/ecs.example
+
+## Submodule Repository
+https://github.com/chromealex/ecs-submodule
 
 ## Glossary
 | Link | Description |
@@ -32,10 +63,13 @@ https://github.com/chromealex/ecs.example
 | [Receive User Input](Docs/Manual-ReceivingUserInputInWorld.md) | How to receive markers in systems |
 | [Send and Receive RPC Calls](Docs/Manual-SendingAndReceivingRPCCalls.md) | How to register object in **NetworkModule**, send and receive RPC packages |
 | [Defines](Docs/Defines.md) | Define usage |
-| [Data Configs](Docs/DataConfig-Readme.md) | How to create data config files |
+| [Data Configs](Docs/DataConfig-Readme.md) | How to create and use data configs |
+| [Global Events](Docs/GlobalEvents-Readme.md) | How to create and use global events |
 | [Code Generators](Docs/CodeGenerators.md) | Code Generators usage |
 | [Pathfinding Package](https://github.com/chromealex/ecs-submodule/tree/master/ECSPathfinding) | Here is Pathfinding Package readme |
 | [Serializer Package](https://github.com/chromealex/ecs-submodule/tree/master/ECSSerializer) | Here is Serializer Package readme |
+| [Data Config Generator](https://github.com/chromealex/ecs-submodule/tree/master/ECSAddons/DataConfigGenerator) | Data Config Generator with Google Spreadsheets |
+
 
 ## Contact Me
 Telegram: https://t.me/chromealex</br>
