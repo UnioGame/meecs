@@ -2,8 +2,6 @@
 Here are some classes for understanding how to set up **NetworkModule** properly. You should replace FakeTransporter and FakeSerializer with your implementation.
 Local project will run and all RPC events will go through NetworkModule.
 
-> Note: FakeSerializer depends on [FullSerializer](https://github.com/jacobdufault/fullserializer).
-
 ```csharp
 public class NetworkModule : ME.ECS.Network.NetworkModule<State> {
 
@@ -54,7 +52,19 @@ public class FakeTransporter : ME.ECS.Network.ITransporter {
         this.networkType = networkType;
 
     }
+    
+    public bool IsConnected() {
+        
+        return true;
+        
+    }
 
+    public void SendSystem(byte[] bytes) {
+        
+        this.Send(bytes);
+        
+    }
+    
     public void Send(byte[] bytes) {
 
         if ((this.networkType & ME.ECS.Network.NetworkType.RunLocal) == 0) {
@@ -139,45 +149,39 @@ public class FakeTransporter : ME.ECS.Network.ITransporter {
 ```csharp
 public class FSSerializer : ME.ECS.Network.ISerializer {
 
-    private readonly FullSerializer.fsSerializer fsSerializer = new FullSerializer.fsSerializer();
-
     public byte[] SerializeStorage(ME.ECS.StatesHistory.HistoryStorage historyEvent) {
 
-        FullSerializer.fsData data;
-        this.fsSerializer.TrySerialize(typeof(ME.ECS.StatesHistory.HistoryStorage), historyEvent, out data).AssertSuccessWithoutWarnings();
-        var str = FullSerializer.fsJsonPrinter.CompressedJson(data);
-        return System.Text.Encoding.UTF8.GetBytes(str);
+        return ME.ECS.Serializer.Serializer.Pack(historyEvent);
 
     }
 
     public ME.ECS.StatesHistory.HistoryStorage DeserializeStorage(byte[] bytes) {
 
-        var fsData = System.Text.Encoding.UTF8.GetString(bytes);
-        FullSerializer.fsData data = FullSerializer.fsJsonParser.Parse(fsData);
-        object deserialized = null;
-        this.fsSerializer.TryDeserialize(data, typeof(ME.ECS.StatesHistory.HistoryStorage), ref deserialized).AssertSuccessWithoutWarnings();
-
-        return (ME.ECS.StatesHistory.HistoryStorage)deserialized;
-
+        return ME.ECS.Serializer.Serializer.Unpack<ME.ECS.StatesHistory.HistoryStorage>(bytes);
+        
     }
 
     public byte[] Serialize(ME.ECS.StatesHistory.HistoryEvent historyEvent) {
 
-        FullSerializer.fsData data;
-        this.fsSerializer.TrySerialize(typeof(ME.ECS.StatesHistory.HistoryEvent), historyEvent, out data).AssertSuccessWithoutWarnings();
-        var str = FullSerializer.fsJsonPrinter.CompressedJson(data);
-        return System.Text.Encoding.UTF8.GetBytes(str);
+        return ME.ECS.Serializer.Serializer.Pack(historyEvent);
 
     }
 
     public ME.ECS.StatesHistory.HistoryEvent Deserialize(byte[] bytes) {
 
-        var fsData = System.Text.Encoding.UTF8.GetString(bytes);
-        FullSerializer.fsData data = FullSerializer.fsJsonParser.Parse(fsData);
-        object deserialized = null;
-        this.fsSerializer.TryDeserialize(data, typeof(ME.ECS.StatesHistory.HistoryEvent), ref deserialized).AssertSuccessWithoutWarnings();
+        return ME.ECS.Serializer.Serializer.Unpack<ME.ECS.StatesHistory.HistoryEvent>(bytes);
 
-        return (ME.ECS.StatesHistory.HistoryEvent)deserialized;
+    }
+
+    public byte[] SerializeWorld(ME.ECS.World.WorldState data) {
+
+        return ME.ECS.Serializer.Serializer.Pack(data);
+
+    }
+
+    public ME.ECS.World.WorldState DeserializeWorld(byte[] bytes) {
+
+        return ME.ECS.Serializer.Serializer.Unpack<ME.ECS.World.WorldState>(bytes);
 
     }
 

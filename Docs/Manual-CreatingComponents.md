@@ -4,7 +4,7 @@
 
 In struct components you don't have any methods and all copies make automatically.
 If you store managed array here, only pointer will be copied, so if you have static array with some data you can use managed arrays here, but if you change data by your logic in these arrays, you will get sync problems. In some cases you can use **StackArray** to allocate struct array, but there are some limitations with data size. To use managed types in struct components you need to use ```[GeneratorIgnoreManagedType]``` attribute to avoid generator errors.
-In order to use some arrays, you can use [**Intrusive collections**](https://github.com/chromealex/ecs-submodule/tree/master/ECS/Core/Collections/Intrusive) (IntrusiveList, IntrusiveHashSet, IntrusiveDictionary, IntrusiveStack, IntrusiveQueue, etc.) to be free of copying any struct data. Also you can use DataArray<T> collection without Copyable component.
+In order to use some arrays, you can use [**Intrusive collections**](https://github.com/chromealex/ecs-submodule/tree/master/Runtime/Core/Collections/Intrusive) (IntrusiveList, IntrusiveHashSet, IntrusiveDictionary, IntrusiveStack, IntrusiveQueue, etc.) to be free of copying any struct data. Also you can use DataArray<T>/DataObject<T> collection without Copyable component.
 
 ```csharp
 public struct MyStructComponent : IStructComponent {
@@ -15,7 +15,10 @@ public struct MyStructComponent : IStructComponent {
 ```
 
 If you need to store managed data with custom copy interface, you should use **IStructCopyable<>** component where you need to implement CopyFrom(in T other) and OnRecycle() methods.
-> Use this if you are really want to use managed data and you really changes this data in your systems. In other cases use [**Intrusive collections**](https://github.com/chromealex/ecs-submodule/tree/master/ECS/Core/Collections/Intrusive).
+> Use this if you are really want to use managed data and you really changes this data in your systems. In other cases use [**Intrusive collections**](https://github.com/chromealex/ecs-submodule/tree/master/Runtime/Core/Collections/Intrusive).
+	
+> Note! You **must** implement ```CopyFrom``` and ```Recycle``` methods and in CopyFrom you need to copy data from "other" component and in Recycle you need to reset you data to it's default state. Be sure you are copy and reset your data properly!
+	
 ```csharp
 public struct MyStructCopyableComponent : IStructCopyable<MyStructCopyableComponent> {
         
@@ -104,11 +107,28 @@ To be able to add only data components and to avoid components marked ```ICompon
 ### IComponentInitializable
 
 Useful with [DataConfigs](https://github.com/chromealex/ecs/blob/master/Docs/DataConfig-Readme.md) only.<br>
-Sometimes you need to call initialization method for components, so you need to use ```IComponentInitializable``` interface.
+Sometimes you need to call initialization method for components, so you need to use ```IComponentInitializable``` interface. This call is done before copying component onto your entity.
+
+### IComponentDeinitializable
+	
+Useful with [DataConfigs](https://github.com/chromealex/ecs/blob/master/Docs/DataConfig-Readme.md) only.<br>
+Opposite of ```IComponentInitializable```. Called on ```DataConfig::Apply``` when you removing components.
+	
+### IComponentOneShot
+
+In ME.ECS you could fire one-tick components without store them in state.<br>
+These components are similar to NotifyAllSystemsBelow lifetime flag and automatically removed at the end of the tick.
+		
+```csharp
+entity.SetOneShot(new YourOneShotComponent());
+// Here you can get access to your component data or use filters
+... (TICK)
+// No component data exist
+```
 
 ### Versioned Components
 
-In ME.ECS you could track version of component type by calling ```entity.GetDataVersion<TComponent>()```, it would return world's tick when component has changed on this entity. To enable this feature for component type, you should define ```IVersioned interface at your component:
+In ME.ECS you could track version of component type by calling ```entity.GetDataVersion<TComponent>()```, it would return world's tick when component has changed on this entity. To enable this feature for component type, you should define ```IVersioned``` interface at your component:
 	
 ```csharp
 struct MyComponent : IStructComponent, IVersioned {
@@ -118,7 +138,7 @@ struct MyComponent : IStructComponent, IVersioned {
 
 ### Versioned Components (Non-state)
 
-In ME.ECS you could track version of component type by calling entity.GetDataVersionNoState<TComponent>()```, it would return incremented number each time component has changed on this entity. To enable this feature for component type, you should define **IVersionedNoState** interface at your component:
+In ME.ECS you could track version of component type by calling ```entity.GetDataVersionNoState<TComponent>()```, it would return incremented number each time component has changed on this entity. To enable this feature for component type, you should define **IVersionedNoState** interface at your component:
 	
 ```csharp
 struct MyComponent : IStructComponent, IVersionedNoState {
@@ -134,8 +154,6 @@ For struct components there are lifetime property as described in the table belo
 | Infinite | Lifetime has not set, so you need to remove it manually by calling **RemoveData** method on entity. It is component default value. |
 | NotifyAllSystemsBelow | If set all systems defined after executing system will be able to get this component. At the end of current tick this component will be destroyed automatically (see [custom lifetime](https://github.com/chromealex/ecs/blob/master/Docs/Manual-CreatingComponents.md#component-custom-lifetime) section). |
 | NotifyAllSystems | If set all systems will be able to get this component, but only from the begining of the next tick. At the end of next tick this component will be destroyed automatically (see [custom lifetime](https://github.com/chromealex/ecs/blob/master/Docs/Manual-CreatingComponents.md#component-custom-lifetime) section). |
-| NotifyAllModulesBelow | Is set all modules and systems defined after executing system will be able to get this component. At the end of current frame this component will be destroyed automatically. |
-| NotifyAllModules | If set all modules and systems will be able to get this component, but only from the begining of the next frame. At the end of next frame this component will be destroyed automatically. |
 
 In general you need to use **Infinite**, **NotifyAllSystemsBelow** and **NotifyAllSystems** lifetime.
 ```csharp

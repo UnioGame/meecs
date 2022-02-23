@@ -6,11 +6,11 @@
 Entities are containers with **ID** and **Generation**.<br>
 **ID** - unique entity identifier in the world.<br>
 **Generation** - unique entity generation identifier, increase when entity creates from the pool.<br>
-**GetVersion()** - method to return unique version of the entity, increase when entity changed.<br>
+**GetVersion()** - method to return unique version of the entity, increase when entity changed.
 <br>
 <br>
 
-#### Components (```IStructComponent```, ```IStructCopyable<>```)
+#### Components (```IComponent```, ```IStructCopyable<>```)
 [How to create a component](Manual-CreatingComponents.md)
 
 Components are storing data. In ME.ECS there are 2 component types: IStructCopyable<> and IStructComponent.
